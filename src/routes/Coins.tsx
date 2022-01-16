@@ -13,6 +13,11 @@ const Header = styled.header`
   justify-content: center;
   align-items: center;
 `;
+const Title = styled.h1`
+  font-size: 48px;
+  color: ${(props) => props.theme.accentColor};
+`;
+
 const CoinsList = styled.ul``;
 const Coin = styled.li`
   background-color: white;
@@ -30,11 +35,6 @@ const Coin = styled.li`
       color: ${(props) => props.theme.accentColor};
     }
   }
-`;
-
-const Title = styled.h1`
-  font-size: 48px;
-  color: ${(props) => props.theme.accentColor};
 `;
 
 const Loader = styled.div`
@@ -81,7 +81,15 @@ function Coins() {
         <CoinsList>
           {coins.map((coin) => (
             <Coin key={coin.id}>
-              <Link to={`/${coin.id}`}>
+              {/* 구버전 */}
+              {/* <Link to={{
+                pathname: `/${coin.id}`,
+                state:{name:coin.name},
+              }}> */}
+              <Link
+                to={`/${coin.id}`}
+                state={{ name: coin.name, rank: coin.rank }}
+              >
                 <Img
                   src={`https://cryptoicon-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
                 />
