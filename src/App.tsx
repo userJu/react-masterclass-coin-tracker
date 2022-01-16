@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import styled from "styled-components";
 import Router from "./Router";
 import { createGlobalStyle } from "styled-components";
+import { ReactQueryDevtools } from "react-query/devtools";
 // 어떤 component를 만들 수 있게 하는데, 이것은 렌더링 될 때 전역 스코프에 스타일들을 올려주는 역할
 
 const GlobalStyle = createGlobalStyle`
@@ -70,6 +69,7 @@ function App() {
     <>
       <GlobalStyle />
       <Router />
+      <ReactQueryDevtools initialIsOpen={true} />
     </>
   );
 }

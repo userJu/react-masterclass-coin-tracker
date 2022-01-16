@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useParams } from "react-router";
 import { useMatch } from "react-router-dom";
 import { useLocation, Routes, Route, Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo, fetchCoinTickers } from "./api";
 import Chart from "./Chart";
 import Price from "./Price";
 
@@ -134,32 +136,41 @@ interface IPriceData {
 // 사람들이 interface이름지을때 앞에 대문자 i가 있는 것 => interface인지 아닌지 알려주려는 것
 
 function Coin() {
-  const [loading, setLoading] = useState(true);
   const { coinId } = useParams();
   const { state } = useLocation() as RouteState;
-  const [info, setInfo] = useState<IInfoData>();
-  const [priceInfo, setPriceInfo] = useState<IPriceData>();
   const priceMatch = useMatch("/:coinId/price");
   const chartMatch = useMatch("/:coinId/chart");
+  const { isLoading: infoLoading, data: infoData } = useQuery<IInfoData>(
+    ["info", coinId],
+    () => fetchCoinInfo(coinId!)
+  );
+  const { isLoading: tickersLoading, data: tickersData } = useQuery<IPriceData>(
+    ["tickers", coinId],
+    () => fetchCoinTickers(coinId!)
+  );
+  // const [loading, setLoading] = useState(true);
+  // const [info, setInfo] = useState<IInfoData>();
+  // const [priceInfo, setPriceInfo] = useState<IPriceData>();
 
-  useEffect(() => {
-    (async () => {
-      const infoData = await (
-        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-      ).json();
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-      ).json();
-      setInfo(infoData);
-      setPriceInfo(priceData);
-      setLoading(false);
-    })();
-  }, [coinId]);
+  // useEffect(() => {
+  //   (async () => {
+  //     const infoData = await (
+  //       await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
+  //     ).json();
+  //     const priceData = await (
+  //       await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+  //     ).json();
+  //     setInfo(infoData);
+  //     setPriceInfo(priceData);
+  //     setLoading(false);
+  //   })();
+  // }, [coinId]);
+  const loading = infoLoading || tickersLoading;
   return (
     <Container>
       <Header>
         <Title>
-          {state?.name ? state.name : loading ? "Loading..." : info?.name}
+          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
           {/* 홈페이지로부터 왔을 경우 / 홈페이지로부터 오지 않았을 경우  */}
         </Title>
         {/* 시크릿모드나 바로 코인네임이 들어있는 링크로 나오면 뜨는 오류를 막기 위해
@@ -172,22 +183,22 @@ function Coin() {
           <Overview>
             <OverviewItem>
               <span>Rank:</span>
-              <span>{info?.rank}</span>
+              <span>{infoData?.rank}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Symbol:</span>
-              <span>{info?.open_source ? "Yes" : "No"}</span>
+              <span>{infoData?.open_source ? "Yes" : "No"}</span>
             </OverviewItem>
           </Overview>
-          <Description>{info?.description}</Description>
+          <Description>{infoData?.description}</Description>
           <Overview>
             <OverviewItem>
               <span>Total Suply:</span>
-              <span>{priceInfo?.total_supply}</span>
+              <span>{tickersData?.total_supply}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max Supply:</span>
-              <span>{priceInfo?.max_supply}</span>
+              <span>{tickersData?.max_supply}</span>
             </OverviewItem>
           </Overview>
 
