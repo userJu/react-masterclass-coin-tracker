@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { Helmet } from "react-helmet";
 import { useParams } from "react-router";
 import { useMatch } from "react-router-dom";
 import { useLocation, Routes, Route, Link } from "react-router-dom";
@@ -133,6 +133,7 @@ interface IPriceData {
     };
   };
 }
+
 // 사람들이 interface이름지을때 앞에 대문자 i가 있는 것 => interface인지 아닌지 알려주려는 것
 
 function Coin() {
@@ -146,7 +147,8 @@ function Coin() {
   );
   const { isLoading: tickersLoading, data: tickersData } = useQuery<IPriceData>(
     ["tickers", coinId],
-    () => fetchCoinTickers(coinId!)
+    () => fetchCoinTickers(coinId!),
+    { refetchInterval: 5000 }
   );
   // const [loading, setLoading] = useState(true);
   // const [info, setInfo] = useState<IInfoData>();
@@ -168,6 +170,11 @@ function Coin() {
   const loading = infoLoading || tickersLoading;
   return (
     <Container>
+      <Helmet>
+        <title>
+          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+        </title>
+      </Helmet>
       <Header>
         <Title>
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
@@ -186,8 +193,8 @@ function Coin() {
               <span>{infoData?.rank}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Symbol:</span>
-              <span>{infoData?.open_source ? "Yes" : "No"}</span>
+              <span>Price:</span>
+              <span>${tickersData?.quotes.USD.price.toFixed(3)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>
