@@ -134,9 +134,11 @@ interface IPriceData {
   };
 }
 
+interface ICoinProps {}
+
 // 사람들이 interface이름지을때 앞에 대문자 i가 있는 것 => interface인지 아닌지 알려주려는 것
 
-function Coin() {
+function Coin({}: ICoinProps) {
   const { coinId } = useParams();
   const { state } = useLocation() as RouteState;
   const priceMatch = useMatch("/:coinId/price");
@@ -194,7 +196,7 @@ function Coin() {
             </OverviewItem>
             <OverviewItem>
               <span>Price:</span>
-              <span>${tickersData?.quotes.USD.price.toFixed(3)}</span>
+              <span>$ {tickersData?.quotes.USD.price.toFixed(3)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>
